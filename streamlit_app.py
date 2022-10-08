@@ -51,7 +51,7 @@ except URLError as e:
   streamlit.error()
 
 
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+#fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
 #fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
 #streamlit.text(fruityvice_response.json())
 
@@ -60,17 +60,33 @@ fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_c
 # display as table frame
 #streamlit.dataframe(fruityvice_normalized)
 
-streamlit.stop()
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-#my_cur.execute("SELECT CURRENT_USER(), CURRENT_ACCOUNT(), CURRENT_REGION()")
-my_cur.execute("SELECT * from fruit_load_list")
-# my_data_row = my_cur.fetchone() #fetch one colunm
-my_data_rows = my_cur.fetchall()
 streamlit.text("Hello from Snowflake:")
 streamlit.header("The fruit load list contains:")
-streamlit.text(my_data_rows) # print raw text
-streamlit.dataframe(my_data_rows) # display in a data frame format
+#snowflake related functions
+def get_fruit_load_list():
+  with my_cnx.cursor() as my_cur:
+    my_cur.execute("SELECT * from fruit_load_list")
+    return my_cur.fetchall()
+   
+    
+# Add a button to load fruit
+If streamlit.button('get Fruit Load List'):
+  my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+  my_data_rows = get_fruit_load_list()
+  streamlit.dataframe(my_data_rows)
+  
+streamlit.stop()
+
+#my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+#my_cur = my_cnx.cursor()
+#my_cur.execute("SELECT CURRENT_USER(), CURRENT_ACCOUNT(), CURRENT_REGION()")
+#my_cur.execute("SELECT * from fruit_load_list")
+
+# my_data_row = my_cur.fetchone() #fetch one colunm
+#my_data_rows = my_cur.fetchall()
+
+#streamlit.text(my_data_rows) # print raw text
+#streamlit.dataframe(my_data_rows) # display in a data frame format
 
 add_my_fruit = streamlit.text_input('What fruit would you like to add','jackfruit')
 streamlit.write('Thnaks for adding ', add_my_fruit)
